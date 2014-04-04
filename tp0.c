@@ -77,50 +77,8 @@ char decoder ( int numPri, int numSeg){
 
 }
 
-
-void comprobarAction(char* optarg){
-	if( strcmp ( optarg, "encode" ) == 0 ){
-		encoderActivo = true;
-		decoderActivo = false;
-	}
-	if ( strcmp ( optarg, "decode" ) == 0 ){
-		encoderActivo = false;
-		decoderActivo = true;
-	}
-}
-
-void EntradaEncoderStandar(){
-	int c = getchar();
-	while( c != EOF){
-		char* string = encoder(c);
-		printf("%s",string);
-		free(string);
-		c = getchar();
-	}	
-}
-
-void EntradaDecoderStandar(){
-	int c = getchar();
-	int c2 = getchar();
-	while( c != EOF){
-		char string = decoder(c,c2);
-		printf("%c",string);
-		c = getchar();
-		c2 = getchar();
-	}	
-
-}
-
 void procesarArchivos(FILE* finput, FILE* foutput){
-		
-	if(finput == NULL ){
-	    fprintf(stderr,"Error al abrir el archivo input");
-		exit(1);
-	}
-	if (foutput == NULL){
-		fprintf(stderr,"Error al abrir el archivo output");
-		exit(1);
-	}
+	
 	char* string;
 	char c;
 	int caracter2;
@@ -145,7 +103,44 @@ void procesarArchivos(FILE* finput, FILE* foutput){
     fclose(foutput);
 }
 
-void manejar_opciones( int argc , char** argv ){
+void EntradaEncoderStandar(){
+	
+	int c = getchar();
+	while( c != EOF){
+		char* string = encoder(c);
+		printf("%s",string);
+		free(string);
+		c = getchar();
+	}	
+}
+
+void EntradaDecoderStandar(){
+	int c = getchar();
+	int c2 = getchar();
+	while( c != EOF){
+		char string = decoder(c,c2);
+		printf("%c",string);
+		c = getchar();
+		c2 = getchar();
+	}	
+
+}
+
+
+void comprobarAction(char* optarg){
+	if( strcmp ( optarg, "encode" ) == 0 ){
+		encoderActivo = true;
+		decoderActivo = false;
+	}
+	if ( strcmp ( optarg, "decode" ) == 0 ){
+		encoderActivo = false;
+		decoderActivo = true;
+	}
+	
+}
+
+
+void opciones( int argc , char** argv ){
 	
 	int option_index = 0;
 	int option = getopt_long ( argc, argv, "vhi:o:a: ", long_options, &option_index);
@@ -166,35 +161,55 @@ void manejar_opciones( int argc , char** argv ){
 						printf(" -o, --output, Location of the output file\n");
 						printf(" -a, --action, Program action: encode (default) or decode \n");
 						break;			
-			case 'a':	
-						comprobarAction(optarg);
-						break;
+			
 			case 'i':	
 						finput = fopen(optarg,"r");
+						if(finput == NULL ){
+							fprintf(stderr,"Error al abrir el archivo input");
+							exit(1);
+					}
 						break;
 			case 'o':
 						foutput = fopen(optarg, "w");
-						procesarArchivos(finput,foutput);
+						if (foutput == NULL){
+							fprintf(stderr,"Error al abrir el archivo output");
+							exit(1);
+						}						
+						break;
+			case 'a':	
+						comprobarAction(optarg);
 						break;
 			
 			default:
 							
 						break;
 		}  
-		if (option == 'a') EntradaDecoderStandar();
 		
+				
 		option = getopt_long ( argc, argv, "vhi:o:a:", long_options, &option_index);      
      
     }	
+   
 	
 }
 
 
+void controlarOpciones(){
+	
+	 if (finput != NULL && foutput != NULL ){		
+		procesarArchivos(finput,foutput);		
+	}
+	else{
+			if(encoderActivo) EntradaEncoderStandar();
+			else EntradaDecoderStandar();
+	}
 
+}
 
 int main (int argc, char** argv){
-	manejar_opciones( argc , argv);
-	printf("\n");
+	opciones( argc , argv);
+	controlarOpciones();	
+	printf("\nSe completo con exito la operacion\n");
 	return 0;
 
 }
