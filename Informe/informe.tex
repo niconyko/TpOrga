@@ -1,0 +1,142 @@
+\documentclass{article}
+\usepackage{latexsym}
+\usepackage[utf8]{inputenx}
+\usepackage[spanish]{babel}
+\usepackage{graphicx}
+\usepackage{anysize}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{float}
+\setlength{\skip\footins}{5cm}
+\usepackage{lscape}
+\usepackage{verbatim}
+\usepackage{moreverb}
+\usepackage{url}
+\usepackage{enumitem}
+\usepackage{multicol}
+\let\verbatiminput=\verbatimtabinput
+\usepackage[nottoc,numbib]{tocbibind}
+\setcounter{tocdepth}{4}
+\setcounter{secnumdepth}{4}
+\usepackage{color}
+\definecolor{gray97}{gray}{.97}
+\definecolor{gray75}{gray}{.75}
+\definecolor{gray45}{gray}{.45}
+
+\usepackage{listings}
+
+\lstset{ frame=Ltb,
+framerule=0pt,
+aboveskip=0.5cm,
+framextopmargin=3pt,
+framexbottommargin=3pt,
+framexleftmargin=0.4cm,
+framesep=0pt,
+rulesep=.4pt,
+backgroundcolor=\color{gray97},
+rulesepcolor=\color{black},
+%
+stringstyle=\ttfamily,
+showstringspaces = false,
+basicstyle=\small\ttfamily,
+commentstyle=\color{gray45},
+keywordstyle=\bfseries,
+%
+numbers=left,
+numbersep=15pt,
+numberstyle=\tiny,
+numberfirstline = false,
+breaklines=true,
+}
+
+
+
+\lstdefinestyle{consola}
+{basicstyle=\scriptsize\bf\ttfamily,
+backgroundcolor=\color{gray75},
+}
+
+\lstdefinestyle{C}
+{language=C,
+}
+
+
+\marginsize{2cm}{2cm}{.5cm}{3cm} 
+
+\begin{document}
+
+ 
+\begin{titlepage}
+
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}} % Defines a new command for the horizontal lines, change thickness here
+
+\center % Center everything on the page
+ 
+%----------------------------------------------------------------------------------------
+%	HEADING SECTIONS
+%----------------------------------------------------------------------------------------
+
+\textsc{\LARGE Universidad De Buenos Aires}\\[1.5cm] % Name of your university/college
+\textsc{\Large Facultad De Ingeniería}\\[0.5cm] % Major heading such as course name
+\textsc{\large 66.20 Organización De Computadoras}\\[0.5cm] % Minor heading such as course title
+
+%----------------------------------------------------------------------------------------
+%	TITLE SECTION
+%----------------------------------------------------------------------------------------
+
+\HRule \\[0.4cm]
+{ \huge \bfseries Trabajo Práctico 0}\\[0.4cm] % Title of your document
+\HRule \\[1.5cm]
+ 
+%----------------------------------------------------------------------------------------
+%	AUTHOR SECTION
+%----------------------------------------------------------------------------------------
+
+% If you don't want a supervisor, uncomment the two lines below and remove the section above
+\Large \emph{Integrantes:}\\
+Daniel \textsc{Fernandez} - 93083\\ % Your name
+Nicolas \textsc{Ortoleva} - 93196\\ % Your name
+Maximiliano \textsc{Schultheis} - 93285\\[5cm] % Your name
+
+%----------------------------------------------------------------------------------------
+%	LOGO SECTION
+%----------------------------------------------------------------------------------------
+
+\includegraphics[scale=0.5]{img/UBA.jpg}\\[1cm] % Include a department/university logo - this will require the graphicx package
+
+%----------------------------------------------------------------------------------------
+%	DATE SECTION
+%----------------------------------------------------------------------------------------
+
+{\large \text \em {8 de Abril de 2014}}\\[3cm] % Date, change the \today to a set date if you want to be precise
+ 
+%----------------------------------------------------------------------------------------
+
+\vfill % Fill the rest of the page with whitespace
+
+\end{titlepage}
+
+\tableofcontents
+
+\newpage
+
+\section{Diseño e implementación}
+
+
+
+
+
+\section{C\'odigo Fuente}
+
+\subsection{C\'odigo fuente C}
+
+\lstinputlisting[language=C]{source/tp0.c}
+
+\subsection{C\'odigo assembly MIPS}
+
+
+
+\section{Conclusiones}
+
+
+\end{document}

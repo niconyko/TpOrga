@@ -162,10 +162,6 @@ int opciones( int argc , char** argv ){
 	
 	int option_index = 0;
 	int option = getopt_long ( argc, argv, "vhi:o:a:", long_options, &option_index);
-	if( option == -1 ){ 
-		EntradaEncoderStandar();
-		return;
-	}
 	while ( option != -1 ){
 		
 		switch ( option ){
