@@ -110,7 +110,7 @@ void procesarArchivos(FILE* finput, FILE* foutput){
 void EntradaEncoderStandar(){
 	
 	int c = getchar();
-	while( c != EOF){
+	while( c != EOF && c!='\n'){
 		char* string = encoder(c);
 		printf("%s",string);
 		free(string);
@@ -121,7 +121,7 @@ void EntradaEncoderStandar(){
 void EntradaDecoderStandar(){
 	int c = getchar();
 	int c2 = getchar();
-	while( c != EOF){
+	while( c != EOF && c!='\n' ){
 		char string = decoder(c,c2);
 		if( foutput != NULL ) fputc(string,foutput);
 		else printf("%c",string);
@@ -144,11 +144,24 @@ void comprobarAction(char* optarg){
 	
 }
 
-
-void opciones( int argc , char** argv ){
+void imprimirAyuda(){
+	printf("Usage:\n");
+	printf("\t ./tp0 -h\n");
+	printf("\t ./tp0 -v\n");
+	printf("Options:\n");
+	printf("\t -v, --version, Shows the version of TP. \n");
+	printf("\t -h, --help , Show help \n");
+	printf("\t -i, --input, Location of the input file\n");
+	printf("\t -o, --output, Location of the output file\n");
+	printf("\t -a, --action, Program action: encode (default) or decode \n");
+	printf("Example: \n");
+	printf("\t ./tp0 -a encode -i /input -o /output -h\n");
+	printf("\t ./tp0 -a decode\n");
+}
+int opciones( int argc , char** argv ){
 	
 	int option_index = 0;
-	int option = getopt_long ( argc, argv, "vhi:o:a: ", long_options, &option_index);
+	int option = getopt_long ( argc, argv, "vhi:o:a:", long_options, &option_index);
 	if( option == -1 ){ 
 		EntradaEncoderStandar();
 		return;
@@ -157,37 +170,34 @@ void opciones( int argc , char** argv ){
 		
 		switch ( option ){
 			case 'v': 
-						printf("66.20-Organizacion de Computadoras TP Version 0.0\n");
-						break;
+					printf("66.20-Organizacion de Computadoras TP Version 0.0\n");
+					return 1;
+					break;
 			case 'h':
-						printf(" -v, --version, Shows the version of TP. \n");
-						printf(" -h, --help , Show help \n");
-						printf(" -i, --input, Location of the input file\n");
-						printf(" -o, --output, Location of the output file\n");
-						printf(" -a, --action, Program action: encode (default) or decode \n");
-						break;			
+					imprimirAyuda();
+					return 1;
+					break;			
 			
 			case 'i':	
-						finput = fopen(optarg,"r");
-						if(finput == NULL ){
-							fprintf(stderr,"Error al abrir el archivo input %s\n",optarg);
-							exit(1);
-					}
-						break;
+					finput = fopen(optarg,"r");
+					if(finput == NULL ){
+						fprintf(stderr,"Error al abrir el archivo input %s\n",optarg);
+						exit(1);
+				}
+				break;
 			case 'o':
-						foutput = fopen(optarg, "w");
-						if (foutput == NULL){
-							fprintf(stderr,"Error al abrir el archivo output %s \n",optarg);
-							exit(1);
-						}						
+					foutput = fopen(optarg, "w");
+					if (foutput == NULL){
+						fprintf(stderr,"Error al abrir el archivo output %s \n",optarg);
+						exit(1);
+					}						
 						break;
 			case 'a':	
-						comprobarAction(optarg);
-						break;
+					comprobarAction(optarg);
+					break;
 			
 			default:
-							
-						break;
+					break;
 		}  
 		
 				
@@ -195,7 +205,7 @@ void opciones( int argc , char** argv ){
      
     }	
    
-	
+	return 0;
 }
 
 
@@ -212,9 +222,12 @@ void controlarOpciones(){
 }
 
 int main (int argc, char** argv){
-	opciones( argc , argv);
-	controlarOpciones();	
-	printf("\nSe completo con exito la operacion\n");
+	int opcion = opciones( argc , argv);
+	
+	if(opcion == 0){
+		controlarOpciones();	
+		printf("\nSe completo con exito la operacion\n");
+	}
 	return 0;
 
 }
