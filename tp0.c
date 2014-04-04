@@ -95,7 +95,9 @@ void procesarArchivos(FILE* finput, FILE* foutput){
 			
 			caracter2 = fgetc(finput);
 			c = decoder(caracter,caracter2);
-			fputc(c,foutput);
+			if(foutput != NULL) fputc(c,foutput);
+			else printf("%c",c);
+			
 		
 		}
 		caracter = fgetc(finput);		
