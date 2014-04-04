@@ -3,7 +3,7 @@
 #include <getopt.h>
 #include <string.h>
 #include <stdbool.h>
-
+#include <unistd.h>
 
 
 bool encoderActivo = true;
@@ -108,25 +108,32 @@ void procesarArchivos(FILE* finput, FILE* foutput){
 }
 
 void EntradaEncoderStandar(){
+	bool teclado = isatty(STDIN_FILENO); // true si el buffer esta vacio
 	
 	int c = getchar();
-	while( c != EOF && c!='\n'){
+	bool fin = ((c == EOF && !teclado) || (c == '\n' && teclado));
+	while (!fin) {
 		char* string = encoder(c);
 		printf("%s",string);
 		free(string);
 		c = getchar();
-	}	
+		fin = ((c == EOF && !teclado) || (c =='\n' && teclado));
+	}
 }
 
 void EntradaDecoderStandar(){
+	bool teclado = isatty(STDIN_FILENO); // true si el buffer esta vacio
+	
 	int c = getchar();
 	int c2 = getchar();
-	while( c != EOF && c!='\n' ){
+	bool fin = ((c == EOF && !teclado) || (c == '\n' && teclado));
+	while (!fin) {
 		char string = decoder(c,c2);
 		if( foutput != NULL ) fputc(string,foutput);
 		else printf("%c",string);
 		c = getchar();
 		c2 = getchar();
+		fin = ((c == EOF && !teclado) || (c =='\n' && teclado));
 	}	
 
 }
@@ -222,7 +229,7 @@ int main (int argc, char** argv){
 	
 	if(opcion == 0){
 		controlarOpciones();	
-		printf("\nSe completo con exito la operacion\n");
+		//printf("\nSe completo con exito la operacion\n");
 	}
 	return 0;
 
