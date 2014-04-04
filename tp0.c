@@ -5,8 +5,6 @@
 #include <stdbool.h>
 
 
-char* input_file = NULL;
-char* output_file = NULL;
 
 bool encoderActivo = true;
 bool decoderActivo = false;
@@ -14,7 +12,7 @@ bool decoderActivo = false;
 FILE* finput = NULL;
 FILE* foutput = NULL;
 
-# define BASE 16
+
 
 char* vecHexa [] = {"0","1","2","3","4","5","6","7","8","9","A","B","C","D","E","F"};
 
@@ -39,8 +37,10 @@ char* encoder( int numInt){
 	char* primerChar = vecHexa[primerNum];
 	char* segundoChar = vecHexa[segundoNum];
 	char* valorHexa = malloc( sizeof(char)*3 );
+	
 	strcpy(valorHexa,primerChar);
 	strcat(valorHexa,segundoChar);
+	
 	return valorHexa;
 }
 
@@ -84,13 +84,15 @@ void procesarArchivos(FILE* finput, FILE* foutput){
 	int caracter2;
 	int caracter = fgetc(finput);
 	
-	while (caracter != EOF){
-		
+	while (caracter != EOF){		
 		if(encoderActivo){
-			string = encoder(caracter);
-			fputs(string , foutput);
+			string = encoder(caracter);			
+			if(foutput != NULL) fputs(string , foutput);
+			else printf("%s",string);
 			free(string);
-		}else{
+		}
+		else{
+			
 			caracter2 = fgetc(finput);
 			c = decoder(caracter,caracter2);
 			fputc(c,foutput);
@@ -100,7 +102,7 @@ void procesarArchivos(FILE* finput, FILE* foutput){
 	}       
 	 
     fclose(finput);
-    fclose(foutput);
+    if(foutput != NULL) fclose(foutput);
 }
 
 void EntradaEncoderStandar(){
@@ -119,7 +121,8 @@ void EntradaDecoderStandar(){
 	int c2 = getchar();
 	while( c != EOF){
 		char string = decoder(c,c2);
-		printf("%c",string);
+		if( foutput != NULL ) fputc(string,foutput);
+		else printf("%c",string);
 		c = getchar();
 		c2 = getchar();
 	}	
@@ -165,14 +168,14 @@ void opciones( int argc , char** argv ){
 			case 'i':	
 						finput = fopen(optarg,"r");
 						if(finput == NULL ){
-							fprintf(stderr,"Error al abrir el archivo input");
+							fprintf(stderr,"Error al abrir el archivo input %s\n",optarg);
 							exit(1);
 					}
 						break;
 			case 'o':
 						foutput = fopen(optarg, "w");
 						if (foutput == NULL){
-							fprintf(stderr,"Error al abrir el archivo output");
+							fprintf(stderr,"Error al abrir el archivo output %s \n",optarg);
 							exit(1);
 						}						
 						break;
@@ -196,12 +199,12 @@ void opciones( int argc , char** argv ){
 
 void controlarOpciones(){
 	
-	 if (finput != NULL && foutput != NULL ){		
+	 if (finput != NULL){		
 		procesarArchivos(finput,foutput);		
 	}
 	else{
-			if(encoderActivo) EntradaEncoderStandar();
-			else EntradaDecoderStandar();
+		if(encoderActivo) EntradaEncoderStandar();
+		else EntradaDecoderStandar();
 	}
 
 }
