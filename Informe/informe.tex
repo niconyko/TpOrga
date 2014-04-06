@@ -120,7 +120,7 @@ Maximiliano \textsc{Schultheis} - 93285\\[5cm] % Your name
 
 \newpage
 
-\section{Diseño e implementaci\'on}
+\section{Diseño e implementación}
 El programa posee dos modos implementados: \textit{encode} y \textit{decode}.\par
 El primero es el predeterminado y utiliza un vector (es decir, una tabla) para realizar el pasaje de la representaci\'on decimal a hexadecimal. En primer lugar, se obtiene el nibble más significativo del byte le\'ido, se procede al cambio de base de la forma mencionada, se lo imprime por el \textit{output} configurado y luego se procesa de la misma manera el nibble menos significativo correspondiente.\par
 El segundo modo, en cambio, recibe s\'olo caracteres pertenecientes a la codificaci\'on hexadecimal. Por lo tanto, basta con calcular su distancia relativa al cero (como caracter y con el valor indicado por la tabla ASCII) o a la 'A', seg\'un sea el caso, para obtener los dos nibbles del byte a decodificar. Una vez hecho esto, se los une mediante la operaci\'on l\'ogica 'OR' y se imprime el resultado como en el modo \textit{encode}.\par
@@ -130,7 +130,7 @@ Para obtener una descripci\'on detallada del modo de uso del programa, se debe e
 \item GuestOS\$ ./tp0 -h
 \end{itemize}
 
-\section{Comandos de compilaci\'on}
+\section{Comandos de compilación}
 Sea \$TP0DIR el path absoluto en el GuestOS al archivo tp0.c, entonces:
 \begin{itemize}
 \item GuestOS\$ cd \$TP0DIR
