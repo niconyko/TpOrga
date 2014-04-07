@@ -114,7 +114,8 @@ void EntradaEncoderStandar(){
 	bool fin = ((c == EOF && !teclado) || (c == '\n' && teclado));
 	while (!fin) {
 		char* string = encoder(c);
-		printf("%s",string);
+		if( foutput != NULL ) fprintf(foutput,"%s",string);
+		else printf("%s",string);
 		free(string);
 		c = getchar();
 		fin = ((c == EOF && !teclado) || (c =='\n' && teclado));
