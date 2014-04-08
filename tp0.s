@@ -501,23 +501,33 @@ $L45:
 	la	$t9,encoder
 	jal	$ra,$t9
 	sw	$v0,36($fp)
+	lw	$v0,foutput
+	beq	$v0,$zero,$L46
+	lw	$a0,foutput
+	la	$a1,$LC22
+	lw	$a2,36($fp)
+	la	$t9,fprintf
+	jal	$ra,$t9
+	b	$L47
+$L46:
 	la	$a0,$LC22
 	lw	$a1,36($fp)
 	la	$t9,printf
 	jal	$ra,$t9
+$L47:
 	lw	$a0,36($fp)
 	la	$t9,free
 	jal	$ra,$t9
 	lw	$v0,__sF+4
 	addu	$v0,$v0,-1
 	sw	$v0,__sF+4
-	bgez	$v0,$L46
+	bgez	$v0,$L48
 	la	$a0,__sF
 	la	$t9,__srget
 	jal	$ra,$t9
 	sw	$v0,48($fp)
-	b	$L47
-$L46:
+	b	$L49
+$L48:
 	la	$v0,__sF
 	lw	$v1,0($v0)
 	move	$a0,$v1
@@ -525,27 +535,27 @@ $L46:
 	sw	$a0,48($fp)
 	addu	$v1,$v1,1
 	sw	$v1,0($v0)
-$L47:
+$L49:
 	lw	$v0,48($fp)
 	sw	$v0,28($fp)
 	sb	$zero,52($fp)
 	lw	$v1,28($fp)
 	li	$v0,-1			# 0xffffffffffffffff
-	bne	$v1,$v0,$L50
+	bne	$v1,$v0,$L52
 	lbu	$v0,24($fp)
-	bne	$v0,$zero,$L50
-	b	$L49
-$L50:
+	bne	$v0,$zero,$L52
+	b	$L51
+$L52:
 	lw	$v1,28($fp)
 	li	$v0,10			# 0xa
-	bne	$v1,$v0,$L48
+	bne	$v1,$v0,$L50
 	lbu	$v0,24($fp)
-	bne	$v0,$zero,$L49
-	b	$L48
-$L49:
+	bne	$v0,$zero,$L51
+	b	$L50
+$L51:
 	li	$v0,1			# 0x1
 	sb	$v0,52($fp)
-$L48:
+$L50:
 	lbu	$v0,52($fp)
 	sb	$v0,32($fp)
 	b	$L43
@@ -581,13 +591,13 @@ EntradaDecoderStandar:
 	lw	$v0,__sF+4
 	addu	$v0,$v0,-1
 	sw	$v0,__sF+4
-	bgez	$v0,$L52
+	bgez	$v0,$L54
 	la	$a0,__sF
 	la	$t9,__srget
 	jal	$ra,$t9
 	sw	$v0,40($fp)
-	b	$L53
-$L52:
+	b	$L55
+$L54:
 	la	$v0,__sF
 	lw	$v1,0($v0)
 	move	$a0,$v1
@@ -595,19 +605,19 @@ $L52:
 	sw	$a0,40($fp)
 	addu	$v1,$v1,1
 	sw	$v1,0($v0)
-$L53:
+$L55:
 	lw	$v0,40($fp)
 	sw	$v0,28($fp)
 	lw	$v0,__sF+4
 	addu	$v0,$v0,-1
 	sw	$v0,__sF+4
-	bgez	$v0,$L54
+	bgez	$v0,$L56
 	la	$a0,__sF
 	la	$t9,__srget
 	jal	$ra,$t9
 	sw	$v0,44($fp)
-	b	$L55
-$L54:
+	b	$L57
+$L56:
 	la	$v0,__sF
 	lw	$v1,0($v0)
 	move	$a0,$v1
@@ -615,74 +625,54 @@ $L54:
 	sw	$a0,44($fp)
 	addu	$v1,$v1,1
 	sw	$v1,0($v0)
-$L55:
+$L57:
 	lw	$v0,44($fp)
 	sw	$v0,32($fp)
 	sb	$zero,48($fp)
 	lw	$v1,28($fp)
 	li	$v0,-1			# 0xffffffffffffffff
-	bne	$v1,$v0,$L58
+	bne	$v1,$v0,$L60
 	lbu	$v0,24($fp)
-	bne	$v0,$zero,$L58
-	b	$L57
-$L58:
+	bne	$v0,$zero,$L60
+	b	$L59
+$L60:
 	lw	$v1,28($fp)
 	li	$v0,10			# 0xa
-	bne	$v1,$v0,$L56
+	bne	$v1,$v0,$L58
 	lbu	$v0,24($fp)
-	bne	$v0,$zero,$L57
-	b	$L56
-$L57:
+	bne	$v0,$zero,$L59
+	b	$L58
+$L59:
 	li	$v0,1			# 0x1
 	sb	$v0,48($fp)
-$L56:
+$L58:
 	lbu	$v0,48($fp)
 	sb	$v0,36($fp)
-$L59:
-	lbu	$v0,36($fp)
-	beq	$v0,$zero,$L61
-	b	$L51
 $L61:
+	lbu	$v0,36($fp)
+	beq	$v0,$zero,$L63
+	b	$L53
+$L63:
 	lw	$a0,28($fp)
 	lw	$a1,32($fp)
 	la	$t9,decoder
 	jal	$ra,$t9
 	sb	$v0,37($fp)
 	lw	$v0,foutput
-	beq	$v0,$zero,$L62
+	beq	$v0,$zero,$L64
 	lb	$v0,37($fp)
 	move	$a0,$v0
 	lw	$a1,foutput
 	la	$t9,fputc
 	jal	$ra,$t9
-	b	$L63
-$L62:
+	b	$L65
+$L64:
 	lb	$v0,37($fp)
 	la	$a0,$LC23
 	move	$a1,$v0
 	la	$t9,printf
 	jal	$ra,$t9
-$L63:
-	lw	$v0,__sF+4
-	addu	$v0,$v0,-1
-	sw	$v0,__sF+4
-	bgez	$v0,$L64
-	la	$a0,__sF
-	la	$t9,__srget
-	jal	$ra,$t9
-	sw	$v0,52($fp)
-	b	$L65
-$L64:
-	la	$v0,__sF
-	lw	$v1,0($v0)
-	move	$a0,$v1
-	lbu	$a0,0($a0)
-	sw	$a0,52($fp)
-	addu	$v1,$v1,1
-	sw	$v1,0($v0)
 $L65:
-	lw	$v0,52($fp)
-	sw	$v0,28($fp)
 	lw	$v0,__sF+4
 	addu	$v0,$v0,-1
 	sw	$v0,__sF+4
@@ -690,20 +680,20 @@ $L65:
 	la	$a0,__sF
 	la	$t9,__srget
 	jal	$ra,$t9
-	sw	$v0,56($fp)
+	sw	$v0,52($fp)
 	b	$L67
 $L66:
 	la	$v0,__sF
 	lw	$v1,0($v0)
 	move	$a0,$v1
 	lbu	$a0,0($a0)
-	sw	$a0,56($fp)
+	sw	$a0,52($fp)
 	addu	$v1,$v1,1
 	sw	$v1,0($v0)
 $L67:
-	lw	$v0,56($fp)
-	sw	$v0,32($fp)
-	sb	$zero,60($fp)
+	lw	$v0,52($fp)
+	sw	$v0,28($fp)
+	sb	$zero,56($fp)
 	lw	$v1,28($fp)
 	li	$v0,-1			# 0xffffffffffffffff
 	bne	$v1,$v0,$L70
@@ -719,12 +709,34 @@ $L70:
 	b	$L68
 $L69:
 	li	$v0,1			# 0x1
-	sb	$v0,60($fp)
+	sb	$v0,56($fp)
 $L68:
-	lbu	$v0,60($fp)
+	lbu	$v0,56($fp)
 	sb	$v0,36($fp)
-	b	$L59
-$L51:
+	lbu	$v0,36($fp)
+	bne	$v0,$zero,$L61
+	lw	$v0,__sF+4
+	addu	$v0,$v0,-1
+	sw	$v0,__sF+4
+	bgez	$v0,$L72
+	la	$a0,__sF
+	la	$t9,__srget
+	jal	$ra,$t9
+	sw	$v0,60($fp)
+	b	$L73
+$L72:
+	la	$v0,__sF
+	lw	$v1,0($v0)
+	move	$a0,$v1
+	lbu	$a0,0($a0)
+	sw	$a0,60($fp)
+	addu	$v1,$v1,1
+	sw	$v1,0($v0)
+$L73:
+	lw	$v0,60($fp)
+	sw	$v0,32($fp)
+	b	$L61
+$L53:
 	move	$sp,$fp
 	lw	$ra,72($sp)
 	lw	$fp,68($sp)
@@ -761,20 +773,20 @@ comprobarAction:
 	la	$a1,$LC24
 	la	$t9,strcmp
 	jal	$ra,$t9
-	bne	$v0,$zero,$L72
+	bne	$v0,$zero,$L75
 	li	$v0,1			# 0x1
 	sb	$v0,encoderActivo
 	sb	$zero,decoderActivo
-$L72:
+$L75:
 	lw	$a0,40($fp)
 	la	$a1,$LC25
 	la	$t9,strcmp
 	jal	$ra,$t9
-	bne	$v0,$zero,$L71
+	bne	$v0,$zero,$L74
 	sb	$zero,encoderActivo
 	li	$v0,1			# 0x1
 	sb	$v0,decoderActivo
-$L71:
+$L74:
 	move	$sp,$fp
 	lw	$ra,32($sp)
 	lw	$fp,28($sp)
@@ -928,72 +940,72 @@ opciones:
 	la	$t9,getopt_long
 	jal	$ra,$t9
 	sw	$v0,36($fp)
-$L76:
+$L79:
 	lw	$v1,36($fp)
 	li	$v0,-1			# 0xffffffffffffffff
-	bne	$v1,$v0,$L78
-	b	$L77
-$L78:
+	bne	$v1,$v0,$L81
+	b	$L80
+$L81:
 	lw	$v0,36($fp)
 	addu	$v0,$v0,-97
 	sw	$v0,44($fp)
 	lw	$v1,44($fp)
 	sltu	$v0,$v1,22
-	beq	$v0,$zero,$L79
+	beq	$v0,$zero,$L82
 	lw	$v0,44($fp)
 	sll	$v1,$v0,2
-	la	$v0,$L88
+	la	$v0,$L91
 	addu	$v0,$v1,$v0
 	lw	$v0,0($v0)
 	.cpadd	$v0
 	j	$v0
 	.rdata
 	.align	2
-$L88:
-	.gpword	$L86
-	.gpword	$L79
-	.gpword	$L79
-	.gpword	$L79
-	.gpword	$L79
-	.gpword	$L79
-	.gpword	$L79
-	.gpword	$L81
+$L91:
+	.gpword	$L89
 	.gpword	$L82
-	.gpword	$L79
-	.gpword	$L79
-	.gpword	$L79
-	.gpword	$L79
-	.gpword	$L79
+	.gpword	$L82
+	.gpword	$L82
+	.gpword	$L82
+	.gpword	$L82
+	.gpword	$L82
 	.gpword	$L84
-	.gpword	$L79
-	.gpword	$L79
-	.gpword	$L79
-	.gpword	$L79
-	.gpword	$L79
-	.gpword	$L79
-	.gpword	$L80
+	.gpword	$L85
+	.gpword	$L82
+	.gpword	$L82
+	.gpword	$L82
+	.gpword	$L82
+	.gpword	$L82
+	.gpword	$L87
+	.gpword	$L82
+	.gpword	$L82
+	.gpword	$L82
+	.gpword	$L82
+	.gpword	$L82
+	.gpword	$L82
+	.gpword	$L83
 	.text
-$L80:
+$L83:
 	la	$a0,$LC39
 	la	$t9,printf
 	jal	$ra,$t9
 	li	$v0,1			# 0x1
 	sw	$v0,40($fp)
-	b	$L75
-$L81:
+	b	$L78
+$L84:
 	la	$t9,imprimirAyuda
 	jal	$ra,$t9
 	li	$v1,1			# 0x1
 	sw	$v1,40($fp)
-	b	$L75
-$L82:
+	b	$L78
+$L85:
 	lw	$a0,optarg
 	la	$a1,$LC40
 	la	$t9,fopen
 	jal	$ra,$t9
 	sw	$v0,finput
 	lw	$v0,finput
-	bne	$v0,$zero,$L79
+	bne	$v0,$zero,$L82
 	la	$a0,__sF+176
 	la	$a1,$LC41
 	lw	$a2,optarg
@@ -1002,14 +1014,14 @@ $L82:
 	li	$a0,1			# 0x1
 	la	$t9,exit
 	jal	$ra,$t9
-$L84:
+$L87:
 	lw	$a0,optarg
 	la	$a1,$LC42
 	la	$t9,fopen
 	jal	$ra,$t9
 	sw	$v0,foutput
 	lw	$v0,foutput
-	bne	$v0,$zero,$L79
+	bne	$v0,$zero,$L82
 	la	$a0,__sF+176
 	la	$a1,$LC43
 	lw	$a2,optarg
@@ -1018,11 +1030,11 @@ $L84:
 	li	$a0,1			# 0x1
 	la	$t9,exit
 	jal	$ra,$t9
-$L86:
+$L89:
 	lw	$a0,optarg
 	la	$t9,comprobarAction
 	jal	$ra,$t9
-$L79:
+$L82:
 	addu	$v0,$fp,32
 	sw	$v0,16($sp)
 	lw	$a0,64($fp)
@@ -1032,10 +1044,10 @@ $L79:
 	la	$t9,getopt_long
 	jal	$ra,$t9
 	sw	$v0,36($fp)
-	b	$L76
-$L77:
+	b	$L79
+$L80:
 	sw	$zero,40($fp)
-$L75:
+$L78:
 	lw	$v0,40($fp)
 	move	$sp,$fp
 	lw	$ra,56($sp)
@@ -1061,22 +1073,22 @@ controlarOpciones:
 	sw	$gp,24($sp)
 	move	$fp,$sp
 	lw	$v0,finput
-	beq	$v0,$zero,$L90
+	beq	$v0,$zero,$L93
 	lw	$a0,finput
 	lw	$a1,foutput
 	la	$t9,procesarArchivos
 	jal	$ra,$t9
-	b	$L89
-$L90:
+	b	$L92
+$L93:
 	lbu	$v0,encoderActivo
-	beq	$v0,$zero,$L92
+	beq	$v0,$zero,$L95
 	la	$t9,EntradaEncoderStandar
 	jal	$ra,$t9
-	b	$L89
-$L92:
+	b	$L92
+$L95:
 	la	$t9,EntradaDecoderStandar
 	jal	$ra,$t9
-$L89:
+$L92:
 	move	$sp,$fp
 	lw	$ra,32($sp)
 	lw	$fp,28($sp)
@@ -1108,10 +1120,10 @@ main:
 	jal	$ra,$t9
 	sw	$v0,24($fp)
 	lw	$v0,24($fp)
-	bne	$v0,$zero,$L95
+	bne	$v0,$zero,$L98
 	la	$t9,controlarOpciones
 	jal	$ra,$t9
-$L95:
+$L98:
 	move	$v0,$zero
 	move	$sp,$fp
 	lw	$ra,40($sp)
