@@ -133,8 +133,8 @@ void EntradaDecoderStandar(){
 		if( foutput != NULL ) fputc(string,foutput);
 		else printf("%c",string);
 		c = getchar();
-		c2 = getchar();
 		fin = ((c == EOF && !teclado) || (c =='\n' && teclado));
+		if (!fin) c2 = getchar();
 	}	
 
 }
