@@ -3,19 +3,19 @@
 #include <getopt.h>
 #include <string.h>
 #include <stdbool.h>
-#include <unistd.h>
 
 
-bool encoderActivo = true;
-bool decoderActivo = false;
+
+static bool encoderActivo = true;
+static bool decoderActivo = false;
 
 FILE* finput = NULL;
 FILE* foutput = NULL;
 
 
 
-char* vecHexa [] = {"0","1","2","3","4","5","6","7","8","9","A","B","C","D","E","F"};
-
+static char vecHexa [] = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
+static char valorHexa[2];
 
 static struct option long_options[] = {
 	 {"version", no_argument, 0, 'v'},
@@ -34,13 +34,9 @@ char* encoder( int numInt){
 	int primerNum = highNible >> 4;
 	int segundoNum = lowNible;
 	
-	char* primerChar = vecHexa[primerNum];
-	char* segundoChar = vecHexa[segundoNum];
-	char* valorHexa = malloc( sizeof(char)*3 );
-	
-	strcpy(valorHexa,primerChar);
-	strcat(valorHexa,segundoChar);
-	
+	valorHexa[0] = vecHexa[primerNum];
+	valorHexa[1] = vecHexa[segundoNum];
+		
 	return valorHexa;
 }
 
@@ -84,57 +80,75 @@ void procesarArchivos(FILE* finput, FILE* foutput){
 	int caracter2;
 	int caracter = fgetc(finput);
 	
-	while (caracter != EOF){		
+	while (caracter != EOF ){		
 		if(encoderActivo){
 			string = encoder(caracter);			
-			if(foutput != NULL) fputs(string , foutput);
-			else printf("%s",string);
-			free(string);
+			if(foutput != NULL){
+				if( fputs(string , foutput) == EOF){
+					fprintf(stderr,"Error al escribir el archivo de salida\n");
+					exit(1);
+				}
+			}else printf("%s",string);
+		
 		}
 		else{
 			
 			caracter2 = fgetc(finput);
+			
+			if( ferror(finput) ){
+				fprintf(stderr,"Error al leer el archivo de entrada\n");
+				exit(1);
+			}
+			
 			c = decoder(caracter,caracter2);
-			if(foutput != NULL) fputc(c,foutput);
-			else printf("%c",c);
+			if(foutput != NULL){
+				if( fputc(c,foutput) == EOF ){
+					fprintf(stderr,"Error al escribir el archivo de salida\n");
+					exit(1);
+				}
+			}else printf("%c",c);
 			
 		
 		}
 		caracter = fgetc(finput);		
 	}       
 	 
+    if( ferror(finput) ){
+		  fprintf(stderr,"Error al leer el archivo de entrada\n");
+		  exit(1);
+    }
     fclose(finput);
     if(foutput != NULL) fclose(foutput);
 }
 
 void EntradaEncoderStandar(){
-	bool teclado = isatty(STDIN_FILENO); // true si el buffer esta vacio
+	
 	
 	int c = getchar();
-	bool fin = ((c == EOF && !teclado) || (c == '\n' && teclado));
-	while (!fin) {
+	
+	while (c != EOF) {
 		char* string = encoder(c);
 		if( foutput != NULL ) fprintf(foutput,"%s",string);
-		else printf("%s",string);
-		free(string);
-		c = getchar();
-		fin = ((c == EOF && !teclado) || (c =='\n' && teclado));
+		else printf("%s",string);		
+		c = getchar();		
 	}
 }
 
 void EntradaDecoderStandar(){
-	bool teclado = isatty(STDIN_FILENO); // true si el buffer esta vacio
+	
 	
 	int c = getchar();
 	int c2 = getchar();
-	bool fin = ((c == EOF && !teclado) || (c == '\n' && teclado));
-	while (!fin) {
+	
+	while (c != EOF && c2 != EOF ) {
 		char string = decoder(c,c2);
-		if( foutput != NULL ) fputc(string,foutput);
-		else printf("%c",string);
+		if( foutput != NULL ){
+			if( fputc(string,foutput) == EOF ) fprintf(stderr,"Error al escribir el archivo de salida\n");
+		
+		} else printf("%c",string);
 		c = getchar();
-		fin = ((c == EOF && !teclado) || (c =='\n' && teclado));
-		if (!fin) c2 = getchar();
+		if(c == '\n') c = getchar();
+		c2 = getchar();
 	}	
 
 }
