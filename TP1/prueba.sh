@@ -1,8 +1,8 @@
 n=1;
 while :; do
  head -c $n </dev/urandom >/tmp/in.bin;
- ./tp0 -a encode -i /tmp/in.bin -o /tmp/out.b16;
- ./tp0 -a decode -i /tmp/out.b16 -o /tmp/out.bin;
+ ./tp1 -a encode -i /tmp/in.bin -o /tmp/out.b16;
+ ./tp1 -a decode -i /tmp/out.b16 -o /tmp/out.bin;
 
 	if diff /tmp/in.bin /tmp/out.bin; then :; else
 		echo ERROR: $n;
