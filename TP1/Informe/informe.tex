@@ -1,0 +1,155 @@
+\documentclass{article}
+\usepackage{latexsym}
+\usepackage[utf8]{inputenx}
+\usepackage[spanish]{babel}
+\usepackage{graphicx}
+\usepackage{anysize}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{float}
+\setlength{\skip\footins}{5cm}
+\usepackage{lscape}
+\usepackage{verbatim}
+\usepackage{moreverb}
+\usepackage{url}
+\usepackage{enumitem}
+\usepackage{multicol}
+\let\verbatiminput=\verbatimtabinput
+\usepackage[nottoc,numbib]{tocbibind}
+\setcounter{tocdepth}{4}
+\setcounter{secnumdepth}{4}
+\usepackage{color}
+\definecolor{gray97}{gray}{.97}
+\definecolor{gray75}{gray}{.75}
+\definecolor{gray45}{gray}{.45}
+
+\usepackage{listings}
+
+\lstset{ frame=Ltb,
+framerule=0pt,
+aboveskip=0.5cm,
+framextopmargin=3pt,
+framexbottommargin=3pt,
+framexleftmargin=0.4cm,
+framesep=0pt,
+rulesep=.4pt,
+backgroundcolor=\color{gray97},
+rulesepcolor=\color{black},
+%
+stringstyle=\ttfamily,
+showstringspaces = false,
+basicstyle=\small\ttfamily,
+commentstyle=\color{gray45},
+keywordstyle=\bfseries,
+%
+numbers=left,
+numbersep=15pt,
+numberstyle=\tiny,
+numberfirstline = false,
+breaklines=true,
+}
+
+
+
+\lstdefinestyle{consola}
+{basicstyle=\scriptsize\bf\ttfamily,
+backgroundcolor=\color{gray75},
+}
+
+\lstdefinestyle{C}
+{language=C,
+}
+
+
+\marginsize{2cm}{2cm}{.5cm}{3cm} 
+
+\begin{document}
+
+ 
+\begin{titlepage}
+
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}} % Defines a new command for the horizontal lines, change thickness here
+
+\center % Center everything on the page
+ 
+%----------------------------------------------------------------------------------------
+%	HEADING SECTIONS
+%----------------------------------------------------------------------------------------
+
+\textsc{\LARGE Universidad De Buenos Aires}\\[1.5cm] % Name of your university/college
+\textsc{\Large Facultad De Ingeniería}\\[0.5cm] % Major heading such as course name
+\textsc{\large 66.20 Organización De Computadoras}\\[0.5cm] % Minor heading such as course title
+
+%----------------------------------------------------------------------------------------
+%	TITLE SECTION
+%----------------------------------------------------------------------------------------
+
+\HRule \\[0.4cm]
+{ \huge \bfseries Trabajo Práctico 0}\\[0.4cm] % Title of your document
+\HRule \\[1.5cm]
+ 
+%----------------------------------------------------------------------------------------
+%	AUTHOR SECTION
+%----------------------------------------------------------------------------------------
+
+% If you don't want a supervisor, uncomment the two lines below and remove the section above
+\Large \emph{Integrantes:}\\
+Daniel \textsc{Fernandez} - 93083\\ % Your name
+Nicolas \textsc{Ortoleva} - 93196\\ % Your name
+Maximiliano \textsc{Schultheis} - 93285\\[5cm] % Your name
+
+%----------------------------------------------------------------------------------------
+%	LOGO SECTION
+%----------------------------------------------------------------------------------------
+
+\includegraphics[scale=0.5]{img/UBA.jpg}\\[1cm] % Include a department/university logo - this will require the graphicx package
+
+%----------------------------------------------------------------------------------------
+%	DATE SECTION
+%----------------------------------------------------------------------------------------
+
+{\large \text \em {8 de Abril de 2014}}\\[3cm] % Date, change the \today to a set date if you want to be precise
+ 
+%----------------------------------------------------------------------------------------
+
+\vfill % Fill the rest of the page with whitespace
+
+\end{titlepage}
+
+\tableofcontents
+
+\newpage
+
+\section{Diseño e implementación}
+El programa posee dos modos implementados: \textit{encode} y \textit{decode}.\par
+El primero es el predeterminado y utiliza un vector (es decir, una tabla) para realizar el pasaje de la representaci\'on decimal a hexadecimal. En primer lugar, se obtiene el nibble más significativo del byte le\'ido, se procede al cambio de base de la forma mencionada, se lo imprime por el \textit{output} configurado y luego se procesa de la misma manera el nibble menos significativo correspondiente.\par
+El segundo modo, en cambio, recibe s\'olo caracteres pertenecientes a la codificaci\'on hexadecimal. Por lo tanto, basta con calcular su distancia relativa al cero (como caracter y con el valor indicado por la tabla ASCII) o a la 'A', seg\'un sea el caso, para obtener los dos nibbles del byte a decodificar. Una vez hecho esto, se los une mediante la operaci\'on l\'ogica 'OR' y se imprime el resultado como en el modo \textit{encode}.\par
+A su vez, la entrada y la salida utilizadas por el programa pueden ser modificadas mediante la incorporaci\'on de ciertas opciones particulares en la l\'inea de comandos, logrando as\'i que se tome la est\'andar provista por el sistema operativo o que se trabaje con archivos elegidos por el usuario.\par
+Para obtener una descripci\'on detallada del modo de uso del programa, se debe ejecutar el comando:
+\begin{itemize}
+\item GuestOS\$ ./tp0 -h
+\end{itemize}
+
+\section{Comandos de compilación}
+Sea \$TP0DIR el path absoluto en el GuestOS al archivo tp0.c, entonces:
+\begin{itemize}
+\item GuestOS\$ cd \$TP0DIR
+\item GuestOS\$ gcc -Wall -o tp0 tp0.c
+\end{itemize}
+
+\section{Pruebas realizadas}
+\subsection{Primeras pruebas}
+\lstinputlisting[language=sh]{../pruebas_cortas.sh}
+\subsection{Prueba de archivos aleatorios}
+\lstinputlisting[language=sh]{../prueba.sh}
+
+\section{C\'odigo Fuente}
+\subsection{C\'odigo fuente C}
+\lstinputlisting[language=C]{../tp0.c}
+\subsection{C\'odigo assembly MIPS}
+\lstinputlisting{../tp0.s}
+
+\section{Conclusiones}
+No s\'olo se ha logrado compilar y ejecutar un programa en C desde el emulador, comprobando la portabilidad de su c\'odigo fuente, sino que tambi\'en se ha notado en t\'erminos generales la gran diferencia existente en la velocidad de ejecuci\'on entre el anfitri\'on y el huesped.
+
+\end{document}
