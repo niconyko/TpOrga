@@ -33,7 +33,7 @@ int procesarArchivos (FILE* finput, FILE* foutput) {
 
 void escribir_error (int errorcode) {
 	int error = errorcode + ERROR_CONST;
-	fprintf(stderr, b16_errmsg[error]);
+	fprintf(stderr, "%s", b16_errmsg[error]);
 	exit (error);
 }
 
