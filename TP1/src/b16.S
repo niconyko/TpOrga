@@ -1,89 +1,56 @@
 #include<mips/regdef.h>
 #include<sys/syscall.h>
-
-	.section .mdebug.abi32
-	.previous
-	.abicalls
-	.data
-	.align	2
-	.type	vecHexa, @object
-	.size	vecHexa, 16
-vecHexa:
-	.byte	48
-	.byte	49
-	.byte	50
-	.byte	51
-	.byte	52
-	.byte	53
-	.byte	54
-	.byte	55
-	.byte	56
-	.byte	57
-	.byte	65
-	.byte	66
-	.byte	67
-	.byte	68
-	.byte	69
-	.byte	70
 	.text
 	.align	2
 	.globl	byte_encoder
 	.ent	byte_encoder
 byte_encoder:
-	.frame	$fp,32,ra		# vars= 16, regs= 2/0, args= 0, extra= 8
-	.mask	0x50000000,-4
-	.fmask	0x00000000,0
-	.set	noreorder
-	.cpload	t9
-	.set	reorder
-	subu	sp,sp,32
-	.cprestore 0
-	sw	$fp,28(sp)
-	sw	gp,24(sp)
-	move	$fp,sp
-	sw	a0,32($fp)
-	sw	a1,36($fp)
-	lw	v0,36($fp)
-	andi	v0,v0,0xf0
-	sw	v0,8($fp)
-	lw	v0,36($fp)
-	andi	v0,v0,0xf
-	sw	v0,12($fp)
-	lw	v0,8($fp)
-	sra	v0,v0,4
-	sw	v0,16($fp)
-	lw	v0,12($fp)
-	sw	v0,20($fp)
-	lw	a0,32($fp)
-	lw	v1,16($fp)
-	la	v0,vecHexa
-	addu	v0,v1,v0
-	lbu	v0,0(v0)
-	sb	v0,0(a0)
-	lw	v0,32($fp)
-	addu	a0,v0,1
-	lw	v1,20($fp)
-	la	v0,vecHexa
-	addu	v0,v1,v0
-	lbu	v0,0(v0)
-	sb	v0,0(a0)
-	move	sp,$fp
-	lw	$fp,28(sp)
-	addu	sp,sp,32
+	.frame	$fp, 32, ra		# vars= 16, regs= 2/0, args= 0, extra= 8
+	
+	subu	sp, sp, 32 
+	
+	sw	$fp, 28(sp)  		#guardo fp en 28 + sp
+	sw	gp, 24(sp)   		#guardo gp en 24 + sp
+	move	$fp, sp	 		# llevo fp a la pos del sp
+	sw	a0, 32($fp)    		#a0 char* valorHexa
+	sw	a1, 36($fp)    		#uint numInt
+	
+	andi v0, a1, 0xf0   	# vo = highNible
+	andi v1, a1, 0x0f  		#v1 = lowNibble
+	
+	sra v0, v0, 4   		# highNibble >> 4
+	
+	la	t0,vecHexa   		#t0 dir de vecHexa  
+	addu	v0,v0,t0  		# v0 tengo v0 + vecHexa v0 Puede ser 0,1,2,3,..,15
+	
+	lbu	v0,0(v0)    		#cargo el byte en v0 al que apunta dir de v0 + VecHexa
+	sb	v0,0(a0)  			#guardo el  byte v0 a lo que apunta a0 --> valorHexa[0]
+	
+	lw	a0,32($fp)   		#tengo a0 nuevamente char* valorHexa  
+	
+	addu	a0,a0,1  		# tengo a0 mas 1byte creo tengo valorHexa + 1 -- valorHexa[1]
+	
+	la	t0,vecHexa   		#t0 dir de vecHexa
+	addu	v1,v1,t0  		#vecHexa + v1
+	lbu	v1, 0(v1)   		#cargo el byte en a0 de la dir apuntada por vecHexa+1
+	sb	v1, 0(a0)   		#guardo v1 en valorHexa[1]
+	move	sp, $fp  		#muevo sp a donde esta fp
+	lw	$fp, 28(sp)  		#recupero fp
+	addu	sp, sp, 32      
+	
 	j	ra
+	
 	.end	byte_encoder
 	.size	byte_encoder, .-byte_encoder
+	
 	.align	2
 	.globl	encode
 	.ent	encode
+	
 encode:
-	.frame	$fp,56,ra		# vars= 16, regs= 3/0, args= 16, extra= 8
-	.mask	0xd0000000,-8
-	.fmask	0x00000000,0
-	.set	noreorder
-	.cpload	t9
-	.set	reorder
-	subu	sp,sp,56
+	
+	.frame	$fp, 56, ra		
+	subu	sp, sp, 56
 	.cprestore 16
 	sw	ra,48(sp)
 	sw	$fp,44(sp)
@@ -99,13 +66,10 @@ encode:
 	jal	ra,t9
 	sw	v0,28($fp)
 	lw	v0,28($fp)
-	bgez	v0,$L15
+	bgez	v0,$L16
 	li	v0,-500			# 0xfffffffffffffe0c
 	sw	v0,28($fp)
-$L15:
-	.set	noreorder
-	nop
-	.set	reorder
+	
 $L16:
 	lw	v0,28($fp)
 	bgtz	v0,$L18
@@ -147,4 +111,24 @@ $L17:
 	j	ra
 	.end	encode
 	.size	encode, .-encode
-	.ident	"GCC: (GNU) 3.3.3 (NetBSD nb3 20040520)"
+	
+	.data
+	.align	2
+	.size	vecHexa, 16
+vecHexa:
+	.byte	48
+	.byte	49
+	.byte	50
+	.byte	51
+	.byte	52
+	.byte	53
+	.byte	54
+	.byte	55
+	.byte	56
+	.byte	57
+	.byte	65
+	.byte	66
+	.byte	67
+	.byte	68
+	.byte	69
+	.byte	70
