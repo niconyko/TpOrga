@@ -1,7 +1,7 @@
 #ifndef _b16_H_
 #define _b16_H_
 
-// ******** IR DESCOMENTANDO A MEDIDA QUE SE VAN IMPLEMENTANDO *********
+
 
 extern const char* b16_errmsg[];
 #define ERROR_CONST 500
