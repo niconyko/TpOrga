@@ -5,7 +5,7 @@
 #include <stdbool.h>
 
 #include "b16.h"
-#include "b16c.h" // temporal
+
 
 // ************************** ESTO QUEDA EN C **************************
 static bool encoderActivo = true;

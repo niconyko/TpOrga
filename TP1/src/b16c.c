@@ -1,3 +1,4 @@
+/*
 #include "b16c.h"
 #include <unistd.h>
 #include "b16.h"
@@ -5,7 +6,7 @@ const char* b16_errmsg[] = {"Error al leer el archivo de entrada\n",
 							"Error al escribir el archivo de salida\n",
 							"Contiene caracteres que no pertenecen al codigo Hexa\n"};
 
-/*
+
 // ****************************** ENCODE *******************************
 static char vecHexa [] = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
 
@@ -35,7 +36,7 @@ int encode (int infd, int outfd) {
 	}
 	return bytes;
 }
-*/
+
 // ****************************** DECODE *******************************
 int correrReferencia  (int numInt) {
 	if ( numInt > 47 && numInt < 58)
@@ -88,3 +89,4 @@ int decode (int infd, int outfd) {
 	}
 	return bytes;
 	}
+*/
