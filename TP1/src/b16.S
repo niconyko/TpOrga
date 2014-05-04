@@ -6,45 +6,47 @@
 	.align	2
 	.globl	byte_encoder
 	.ent	byte_encoder
+
+byte_encoder:				# void byte_encoder (char* valorHexa, unsigned int numInt)
+
+#define BE_FSIZE 16
+#define BE_FRAME_A1 20
+#define BE_FRAME_A0 16
+#define BE_FRAME_FP 12
+#define BE_FRAME_GP 8
+#define BE_FRAME_LNIBBLE 4
+#define BE_FRAME_HNIBBLE 0
+
+	.frame	$fp, BE_FSIZE, ra	# (2 SRA + 2 LTA) * 4 bytes; no hay ABA por ser funcion leaf
+	subu	sp, sp, BE_FSIZE
 	
-byte_encoder:
-	.frame	$fp, 32, ra		
-	subu	sp, sp, 32 
+	sw	$fp, BE_FRAME_FP(sp)		# guardo fp en BE_FRAME_FP + sp
+	sw	gp, BE_FRAME_GP(sp)			# guardo gp en BE_FRAME_GP + sp
+	move	$fp, sp					# llevo fp a la pos del sp
 	
-	sw	$fp, 28(sp)  		#guardo fp en 28 + sp
-	sw	gp, 24(sp)   		#guardo gp en 24 + sp
-	move	$fp, sp	 		# llevo fp a la pos del sp
+	# Argumento de funcion
+	sw	a0, BE_FRAME_A0($fp)    	# a0: char* valorHexa
+	sw	a1, BE_FRAME_A1($fp)    	# a1: unsigned int numInt
 	
-	#Argumento de funcion
-	sw	a0, 32($fp)    		#a0 char* valorHexa
-	sw	a1, 36($fp)    		#uint numInt
+	andi	t0, a1, 0xf0			# t0 = highNibble de numInt
+	sra	t0, t0, 4					# highNibble >> 4
+	sw	t0, BE_FRAME_HNIBBLE($fp)	# guardo la variable local t0 en el stack frame
 	
-	andi v0, a1, 0xf0   	# vo = highNible
-	andi v1, a1, 0x0f  		#v1 = lowNibble
+	andi	t1, a1, 0x0f			# t1 = lowNibble de numInt
+	sw	t1, BE_FRAME_LNIBBLE($fp)	# guardo la variable local t1 en el stack frame
+
+	lb	t2, vecHexa(t0)				# t2 = vecHexa[t0]; -> t2: primer caracter hexa
+	sb	t2, 0(a0)					# a0[0] = t2; es decir: valorHexa[0] = t2
 	
-	sra v0, v0, 4   		# highNibble >> 4
+	lw	a0, BE_FRAME_A0($fp)		# tengo a0 nuevamente char* valorHexa (por seguridad)
+
+	lb	t3, vecHexa(t1)				# t3 = vecHexa[t1]; -> t3: segundo caracter hexa
+	sb	t3, 1(a0)					# a0[1] = t3; es decir: valorHexa[1] = t3
 	
-	la	t0,vecHexa   		#t0 dir de vecHexa  
-	addu	v0,v0,t0  		# v0 tengo v0 + vecHexa donde v0=highNibble
+	lw	$fp, BE_FRAME_FP(sp)		# recupero fp
+	addu	sp, sp, BE_FSIZE		# destruyo el stack frame
 	
-	lbu	v0,0(v0)    		#cargo el byte en v0 al que apunta dir de v0 + VecHexa
-	sb	v0,0(a0)  			#guardo el  byte v0 a lo que apunta a0 --> valorHexa[0]
-	
-	lw	a0,32($fp)   		#tengo a0 nuevamente char* valorHexa  
-	
-	addu	a0,a0,1  		# tengo a0 mas 1byte creo tengo valorHexa + 1 -- valorHexa[1]
-	
-	la	t0,vecHexa   		#t0 dir de vecHexa
-	addu	v1,v1,t0  		#vecHexa + v1
-	lbu	v1, 0(v1)   		#cargo el byte en a0 de la dir apuntada por vecHexa+1
-	sb	v1, 0(a0)   		#guardo v1 en valorHexa[1]
-	
-	move	sp, $fp  		#muevo sp a donde esta fp
-	lw	$fp, 28(sp)  		#recupero fp
-	
-	addu	sp, sp, 32      
-	
-	j	ra
+	jr	ra
 	
 	.end	byte_encoder
 	.size	byte_encoder, .-byte_encoder

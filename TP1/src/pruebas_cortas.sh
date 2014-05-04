@@ -1,5 +1,3 @@
-#!/bin/bash
-
 prueba="Archivo vacio"
 touch /tmp/zero.txt
 ./tp1 -a encode -i /tmp/zero.txt -o /tmp/zero.txt.b16
