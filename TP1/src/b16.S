@@ -7,17 +7,24 @@
 	.globl	byte_encoder
 	.ent	byte_encoder
 
-byte_encoder:				# void byte_encoder (char* valorHexa, unsigned int numInt)
+byte_encoder:						# void byte_encoder (char* valorHexa, unsigned int numInt)
 
+########## STACK FRAME ##########
 #define BE_FSIZE 16
+
+########## CALLER ARGS ##########
 #define BE_FRAME_A1 20
 #define BE_FRAME_A0 16
+
+##########	   SRA     ##########
 #define BE_FRAME_FP 12
 #define BE_FRAME_GP 8
+
+##########     LTA     ##########
 #define BE_FRAME_LNIBBLE 4
 #define BE_FRAME_HNIBBLE 0
 
-	.frame	$fp, BE_FSIZE, ra	# (2 SRA + 2 LTA) * 4 bytes; no hay ABA por ser funcion leaf
+	.frame	$fp, BE_FSIZE, ra		# (2 SRA + 2 LTA) * 4 bytes; no hay ABA por ser funcion leaf
 	subu	sp, sp, BE_FSIZE
 	
 	sw	$fp, BE_FRAME_FP(sp)		# guardo fp en BE_FRAME_FP + sp
@@ -50,82 +57,105 @@ byte_encoder:				# void byte_encoder (char* valorHexa, unsigned int numInt)
 	
 	.end	byte_encoder
 	.size	byte_encoder, .-byte_encoder
-	
+
+
+
 	.align	2
 	.globl	encode
 	.ent	encode
 	
-encode:
+encode:								# int encode (int infd, int outfd)
+
+########## STACK FRAME ##########
+#define ENC_FSIZE 48
+
+########## CALLER ARGS ##########
+#define ENC_FRAME_A1 52
+#define ENC_FRAME_A0 48
+
+##########	   SRA     ##########
+# se agrega un word de padding
+#define ENC_FRAME_RA 40
+#define ENC_FRAME_FP 36
+#define ENC_FRAME_GP 32
+
+##########     LTA     ##########
+# el siguiente string tiene dos caracteres
+#define ENC_FRAME_STRING 24
+#define ENC_FRAME_BYTES 20
+#define ENC_FRAME_CARACTER 16
+
+##########     ABA     ##########
+#define ENC_FRAME_ARG3 12
+#define ENC_FRAME_ARG2 8
+#define ENC_FRAME_ARG1 4
+#define ENC_FRAME_ARG0 0
+
+	.frame	$fp, ENC_FSIZE, ra		# 56
+	subu	sp, sp, ENC_FSIZE
+	.cprestore	ENC_FRAME_GP		# 40
+	sw	ra, ENC_FRAME_RA(sp)		# 48
+	sw	$fp, ENC_FRAME_FP(sp)		# 44
+	move	$fp, sp
 	
-	.frame	$fp, 56, ra		
-	subu	sp, sp, 56
-	.cprestore 40 
-	sw	ra,48(sp)
-	sw	$fp,44(sp)
-	move $fp, sp	
+	sw	a0, ENC_FRAME_A0($fp)		# 56
+	sw	a1, ENC_FRAME_A1($fp)		# 60
+	sw	zero, ENC_FRAME_CARACTER($fp)	# caracter = 0
 	
-	sw	a0, 56($fp)
-	sw	a1, 60($fp)
-	sw	zero, 24($fp)		
+read_y_loop:
+	addu a1,$fp,ENC_FRAME_CARACTER	# en a1 tengo &caracter ya que esa es la direccion de caracter=0 
+	li	a2,1						# cargo a2 con 1, para leer un byte
+	li	v0,	SYS_read				# tengo los 3 argumento del read: a0=infd, a1=&caracter, a2=1
+	syscall							# en v0 tengo la cantidad de bytes que leo o negativo si hubo error
 	
-	addu	a1,$fp,24		#en a1 tengo &caracter ya que ese es la direccion de caracter=0 
-	li	a2,1				#cargo a2 con 1,
-	li	v0,	SYS_read		#tengo los 3 argumento del read a0=inf, a1=&carac , a2=1
-	syscall					#en v0 tengo lo que leo o negativo si hubo error
-	
-	bltz	v0, error_read	#salto si hubo un error de lectura
+	bltz	v0, error_read			# salto si hubo un error de lectura
 	
 loop:
-	bgtz	v0,label1_encode		#salgo del while si es mayor a 0 (en este caso si es 0 pq es eof)
-	b	return_encode			#salta en caso de que sea menor o igual a0
+	bgtz	v0, while_encode		# entro al while si es mayor a 0 (en este caso si es 0, es eof)
+	b	return_encode				# salta en caso de que sea menor o igual a 0
 	
-label1_encode:
-	sw	v0, 28($fp)			#salvo v0 por llamada de funcion de byte_encoder
-	addu a0, $fp, 32		#cargo a0 la direccion $fp+32 que es el string char*
-	lw	a1, 24($fp)			#carga a1 lo que esta en 24+$fp ya que es caracter read escribe en 24+$fp ya q le pase esa direccion
-	la	t9, byte_encoder	#carga en t9 donde esta byte_encoder
-	jal	t9					#salta a byte_encoder
+while_encode:
+	sw	v0, ENC_FRAME_BYTES($fp)	# salvo v0 por llamada de funcion de byte_encoder
+	addu a0, $fp, ENC_FRAME_STRING	# cargo en a0 la direccion $fp + ENC_FRAME_STRING (comienzo del char*)
+	lw	a1, ENC_FRAME_CARACTER($fp)	# a1 = caracter leido
+	la	t9, byte_encoder			# carga en t9 donde esta byte_encoder
+	jal	t9							# salta a byte_encoder
 	
-	lw v0, 28($fp)			#cargo en v0, lo que tenia en v0 antes de llamar a byte_encoder
-	addu	a1, $fp, 32		#en a1 tengo la dir $fp+32 que es el char* string
-	lw	a0, 60($fp)			#en a0 tengo outfd
-	li	a2, 2				#cargo en a2 el 2	
-	li	v0,SYS_write		#llamo a write
+#	lw v0, 28($fp)			#cargo en v0, lo que tenia en v0 antes de llamar a byte_encoder			 !!!!!!!!!
+
+	lw	a0, ENC_FRAME_A1($fp)		# en a0 tengo outfd
+	addu a1, $fp, ENC_FRAME_STRING	# cargo en a1 la direccion $fp + ENC_FRAME_STRING (comienzo del char*)
+	li	a2, 2						# cargo en a2 el 2, para escribir dos bytes
+	li	v0, SYS_write				# llamo a write
 	syscall
 	
-	bltz	v0,error_write  #si es menor a 0 hubo un error de escritura
+	bltz	v0, error_write			# si es menor a 0, hubo un error de escritura
 	
-	lw	a0,56($fp)			#cargo a0 con infd
-	addu	a1,$fp,24		#cargo a1 con &caracter que esta en $fp + 24 
-	li	a2,1				#cargo a2 con 1
-	li	v0,SYS_read
-	syscall
-	
-	bltz	v0, error_read	#si es menor a 0 error lectura
-	b	loop				#sigue con el while si no hubo errores
+	lw	a0, ENC_FRAME_A0($fp)		# cargo a0 con infd
+	b read_y_loop
 
 error_write:
-	li	v0,-499				
-	sw	v0,28($fp)
+	li	v0,-499
+	sw	v0, ENC_FRAME_BYTES($fp)	# 28
 	b return_encode
 
 error_read:
 	li	v0,-500				
-	sw	v0,28($fp)
+	sw	v0, ENC_FRAME_BYTES($fp)	# 28
 	
 return_encode:
-	lw  v0,28($fp)		
-	move	sp,$fp
-	lw	ra,48(sp)
-	lw	$fp,44(sp)
-	addu	sp,sp,56
+	lw  v0, ENC_FRAME_BYTES($fp)	# 28
+#	move	sp,$fp
+	lw	ra, ENC_FRAME_RA(sp)
+	lw	$fp, ENC_FRAME_FP(sp)
+	addu	sp,sp, ENC_FSIZE
 	
-	j	ra
+	jr	ra
 	
 	.end	encode
 	.size	encode, .-encode
 	
-	.data
+	.rdata
 	.align	2
 	.size	vecHexa, 16
 vecHexa:
