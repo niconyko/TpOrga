@@ -103,39 +103,39 @@ encode:								# int encode (int infd, int outfd)
 	sw	zero, ENC_FRAME_CARACTER($fp)	# caracter = 0
 	
 read_y_loop:
-	addu a1,$fp,ENC_FRAME_CARACTER	# a1 = &caracter
-	li	a2,1						# a2 = 1, para leer un byte
-	li	v0,	SYS_read				# tengo los 3 argumentos del read: a0=infd, a1=&caracter, a2=1
-	syscall							# en v0 tengo la cantidad de bytes que leo o negativo si hubo error
-	bltz	v0, error_read			# salto si hubo un error de lectura
+	addu a1,$fp,ENC_FRAME_CARACTER		# a1 = &caracter
+	li	a2,1							# a2 = 1, para leer un byte
+	li	v0,	SYS_read					# tengo los 3 argumentos del read: a0=infd, a1=&caracter, a2=1
+	syscall								# en v0 tengo la cantidad de bytes que leo o negativo si hubo error
+	bltz	v0, error_read				# salto si hubo un error de lectura
 	
-	bgtz	v0, while_encode		# entro al while si es mayor a 0 (en este caso si es 0, es eof)
-	b	return_encode				# salta en caso de que sea menor o igual a 0
+	bgtz	v0, while_encode			# entro al while si es mayor a 0 (en este caso si es 0, es eof)
+	b	return_encode					# salta en caso de que sea menor o igual a 0
 	
 while_encode:
-	sw	v0, ENC_FRAME_BYTES($fp)	# salvo v0 por llamada de funcion de byte_encoder
-	addu a0, $fp, ENC_FRAME_STRING	# cargo en a0 la direccion $fp + ENC_FRAME_STRING (comienzo del char*)
-	lw	a1, ENC_FRAME_CARACTER($fp)	# a1 = caracter leido
-	la	t9, byte_encoder			# carga en t9 donde esta byte_encoder
-	jal	t9							# salta a byte_encoder
+	sw	v0, ENC_FRAME_BYTES($fp)		# salvo v0 por llamada de funcion de byte_encoder
+	addu a0, $fp, ENC_FRAME_STRING		# cargo en a0 la direccion $fp + ENC_FRAME_STRING (comienzo del char*)
+	lw	a1, ENC_FRAME_CARACTER($fp)		# a1 = caracter leido
+	la	t9, byte_encoder				# carga en t9 donde esta byte_encoder
+	jal	t9								# salta a byte_encoder
 
-	lw	a0, ENC_FRAME_A1($fp)		# en a0 tengo outfd
-	addu a1, $fp, ENC_FRAME_STRING	# cargo en a1 la direccion $fp + ENC_FRAME_STRING (comienzo del char*)
-	li	a2, 2						# cargo en a2 el 2, para escribir dos bytes
-	li	v0, SYS_write				# llamo a write
+	lw	a0, ENC_FRAME_A1($fp)			# en a0 tengo outfd
+	addu a1, $fp, ENC_FRAME_STRING		# cargo en a1 la direccion $fp + ENC_FRAME_STRING (comienzo del char*)
+	li	a2, 2							# cargo en a2 el 2, para escribir dos bytes
+	li	v0, SYS_write					# llamo a write
 	syscall
-	bltz	v0, error_write			# si es menor a 0, hubo un error de escritura
+	bltz	v0, error_write				# si es menor a 0, hubo un error de escritura
 	
-	lw	a0, ENC_FRAME_A0($fp)		# a0 = infd
+	lw	a0, ENC_FRAME_A0($fp)			# a0 = infd
 	b read_y_loop
 
 error_write:
-	sub	v0, zero, 2					# error2: -2
+	sub	v0, zero, 2						# error2: -2
 	sw	v0, ENC_FRAME_BYTES($fp)
 	b return_encode
 
 error_read:
-	sub	v0, zero, 1					# error1: -1
+	sub	v0, zero, 1						# error1: -1
 	sw	v0, ENC_FRAME_BYTES($fp)
 	
 return_encode:
@@ -153,22 +153,22 @@ return_encode:
 	.align	2
 	.size	vecHexa, 16
 vecHexa:
-	.byte	48
-	.byte	49
-	.byte	50
-	.byte	51
-	.byte	52
-	.byte	53
-	.byte	54
-	.byte	55
-	.byte	56
-	.byte	57
-	.byte	65
-	.byte	66
-	.byte	67
-	.byte	68
-	.byte	69
-	.byte	70
+	.byte	48				#'0'
+	.byte	49				#'1'
+	.byte	50				#'2'
+	.byte	51				#'3'
+	.byte	52				#'4'
+	.byte	53				#'5'
+	.byte	54				#'6'
+	.byte	55				#'7'
+	.byte	56				#'8'
+	.byte	57				#'9'
+	.byte	65				#'A'
+	.byte	66				#'B'
+	.byte	67				#'C'
+	.byte	68				#'D'
+	.byte	69				#'E'
+	.byte	70				#'F'
 	
 ############	DECODE 	#########
 	.text
@@ -384,11 +384,11 @@ while_decode:
 	b	read_y_loop_decode
 
 error_read_decode:
-	sub	v0, zero, 1					# error1: -1
+	sub	v0, zero, 1						# error1: -1
 	b	return_decode
 	
 error_write_decode:
-	sub	v0, zero, 2					# error2: -2
+	sub	v0, zero, 2						# error2: -2
 
 return_decode:
 	lw	ra, DEC_FRAME_RA(sp)
