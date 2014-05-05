@@ -22,7 +22,7 @@ mensaje=`echo -n Man | ./tp1 | ./tp1 -a decode`
 if [[ "$mensaje" == "Man" ]] ; then echo "ok: $prueba"; else echo "ERROR: $prueba" ; fi
 
 prueba="Verificacion bit a bit de codificacion y decodificacion de xyz\n"
-esperado="0000000   x   y   z  \n
+esperado="0000000    x   y   z  \n                                                
 0000004"
 resultado=`echo xyz | ./tp1 | ./tp1 -a decode | od -t c`
 if [[ "$resultado" == "$esperado" ]] ; then echo "ok: $prueba"; else echo "ERROR: $prueba" ; fi

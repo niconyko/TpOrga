@@ -6,8 +6,6 @@
 
 #include "b16.h"
 
-
-// ************************** ESTO QUEDA EN C **************************
 static bool encoderActivo = true;
 
 static struct option long_options[] = {
@@ -32,7 +30,7 @@ int procesarArchivos (FILE* finput, FILE* foutput) {
 }
 
 void escribir_error (int errorcode) {
-	int error = errorcode + ERROR_CONST;
+	int error = (-1) * errorcode;
 	fprintf(stderr, "%s", b16_errmsg[error]);
 	exit (error);
 }
@@ -80,14 +78,14 @@ int opciones (int argc , char** argv, FILE** finput, FILE** foutput) {
 					(*finput) = fopen(optarg,"r");
 					if ((*finput) == NULL) {
 						fprintf(stderr,"Error al abrir el archivo input %s\n",optarg);
-						exit(1);
+						exit(4);
 				}
 				break;
 			case 'o':
 					(*foutput) = fopen(optarg, "w");
 					if ((*foutput) == NULL) {
 						fprintf(stderr,"Error al abrir el archivo output %s \n",optarg);
-						exit(1);
+						exit(5);
 					}
 						break;
 			case 'a':

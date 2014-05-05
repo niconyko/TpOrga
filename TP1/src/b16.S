@@ -130,12 +130,12 @@ while_encode:
 	b read_y_loop
 
 error_write:
-	li	v0,-499						# 1 - ERROR_CONST
+	sub	v0, zero, 2					# error2: -2
 	sw	v0, ENC_FRAME_BYTES($fp)
 	b return_encode
 
 error_read:
-	li	v0,-500						# 0 - ERROR_CONST
+	sub	v0, zero, 1					# error1: -1
 	sw	v0, ENC_FRAME_BYTES($fp)
 	
 return_encode:
@@ -223,7 +223,7 @@ comparacion3:
 	b return
 	
 error_caracterNoHexa:
-	li v0, -498						# 2 - ERROR_CONST
+	sub	v0, zero, 3					# error3: -3
 	
 return:
 	lw	$fp, CR_FRAME_FP(sp)
@@ -384,11 +384,11 @@ while_decode:
 	b	read_y_loop_decode
 
 error_read_decode:
-	li	v0, -500						# 0 - ERROR_CONST
+	sub	v0, zero, 1					# error1: -1
 	b	return_decode
 	
 error_write_decode:
-	li	v0,-499							# 1 - ERROR_CONST
+	sub	v0, zero, 2					# error2: -2
 
 return_decode:
 	lw	ra, DEC_FRAME_RA(sp)
@@ -406,12 +406,12 @@ return_decode:
 
 #########		b16_errmg		#########
 
-b16_errmsg: .word error1, error2, error3
+b16_errmsg: .word noerror, error1, error2, error3
 	
-	.size b16_errmsg, 12
+	.size b16_errmsg, 16
 	.align 0
 
+noerror: .asciiz "Sin Errores\n\000"
 error1: .asciiz "Error al leer el archivo de entrada\n\000"
 error2: .asciiz "Error al escribir el archivo de salida\n\000"
 error3: .asciiz "Contiene caracteres que no pertenecen al codigo Hexa\n\000"
-
