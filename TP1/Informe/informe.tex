@@ -22,6 +22,9 @@
 \definecolor{gray97}{gray}{.97}
 \definecolor{gray75}{gray}{.75}
 \definecolor{gray45}{gray}{.45}
+\usepackage{array}
+\usepackage[table]{xcolor}
+
 
 \usepackage{listings}
 
@@ -123,10 +126,12 @@ Maximiliano \textsc{Schultheis} - 93285\\[5cm] % Your name
 \section{Diseño e implementación}
 
 
-\section{Comandos de compilación}
 
+
+
+\section{Comandos de compilación}
 \subsection{Makefile}
-\lstinputlisting[language=sh]{../src/makefile}
+\lstinputlisting[language=sh]{../src/makefile para entregar/makefile}
 
 \section{Pruebas realizadas}
 \subsection{Primeras pruebas}
@@ -144,6 +149,107 @@ Maximiliano \textsc{Schultheis} - 93285\\[5cm] % Your name
 \subsection{C\'odigo assembly MIPS b16.S}
 \lstinputlisting{../src/b16.S}
 
+\section{Stack Frame}
+
+\subsection{Stack Frame byte encoder}
+\renewcommand
+{\tabcolsep}{12pt}
+\begin{center}
+\begin{tabular}{r | c |}
+\cline{2-2}
+20 &	   \cellcolor{green}a1 \\ \cline{2-2} 
+16 &	   \cellcolor{green}a0 \\ \cline{2-2}
+12 &  fp \\	\cline{2-2}
+8  &  gp \\	\cline{2-2}
+4  &  LH \\	\cline{2-2}
+0  &  HL \\	\cline{2-2}
+\cline{2-2}
+\end{tabular}
+\end{center}
+
+\subsection{Stack Frame encode}
+\renewcommand
+{\tabcolsep}{12pt}
+\begin{center}
+\begin{tabular}{r | c |}
+\cline{2-2}
+52 &	  \cellcolor{green}a1 \\ \cline{2-2} 
+48 &	  \cellcolor{green}a0 \\ \cline{2-2} 
+44 &	  - \\ \cline{2-2} 
+40 &	  ra \\ \cline{2-2}
+36 &  fp \\	\cline{2-2}
+32  & gp  \\	\cline{2-2}
+28  &  s[1]\\	\cline{2-2}
+24  &  s[0] \\	\cline{2-2}
+20 &	 byte \\ \cline{2-2} 
+16 &	 caracter \\ \cline{2-2}
+12 &  a3 \\	\cline{2-2}
+8  &  a2 \\	\cline{2-2}
+4  &  a1 \\	\cline{2-2}
+0  &  a0 \\	\cline{2-2}
+\cline{2-2}
+\end{tabular}
+\end{center}
+
+\subsection{Stack Frame correr Referencia}
+\renewcommand
+{\tabcolsep}{12pt}
+\begin{center}
+\begin{tabular}{r | c |}
+\cline{2-2}
+8  &  \cellcolor{green}a0 \\	\cline{2-2}
+4  &  fp \\	\cline{2-2}
+0  &  gp \\	\cline{2-2}
+\cline{2-2}
+\end{tabular}
+\end{center}
+
+\subsection{Stack Frame byte decoder}
+
+\renewcommand
+{\tabcolsep}{12pt}
+\begin{center}
+\begin{tabular}{r | c |}
+\cline{2-2}
+44 &	 \cellcolor{green}a1 \\ \cline{2-2} 
+40 &	  \cellcolor{green}a0 \\ \cline{2-2}
+36 &  - \\	\cline{2-2}
+32  & ra \\	\cline{2-2}
+28  &  fp \\	\cline{2-2}
+24  &  gp \\	\cline{2-2}
+20 &	  LN \\ \cline{2-2} 
+16 &	  HL \\ \cline{2-2}
+12 &  a3 \\	\cline{2-2}
+8  &  a2 \\	\cline{2-2}
+4  &  a1 \\	\cline{2-2}
+0  &  a0 \\	\cline{2-2}
+\cline{2-2}
+\end{tabular}
+\end{center}
+
+\subsection{Stack Frame decode}
+\renewcommand
+{\tabcolsep}{12pt}
+\begin{center}
+\begin{tabular}{r | c |}
+\cline{2-2}
+52 &	  \cellcolor{green}a1 \\ \cline{2-2} 
+48 &	  \cellcolor{green}a0 \\ \cline{2-2} 
+44 &	  - \\ \cline{2-2} 
+40 &	  ra \\ \cline{2-2}
+36 &  fp \\	\cline{2-2}
+32  & gp \\	\cline{2-2}
+28  &  c \\	\cline{2-2}
+24  &  caracter2 \\	\cline{2-2}
+20 &	  byte \\ \cline{2-2} 
+16 &	  caracter \\ \cline{2-2}
+12 &  a3 \\	\cline{2-2}
+8  &  a2 \\	\cline{2-2}
+4  &  a1 \\	\cline{2-2}
+0  &  a0 \\	\cline{2-2}
+\cline{2-2}
+\end{tabular}
+\end{center}
 \section{Conclusiones}
 
 
