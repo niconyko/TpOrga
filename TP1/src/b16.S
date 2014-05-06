@@ -1,13 +1,13 @@
 #include<mips/regdef.h>
 #include<sys/syscall.h>
 
-#####		ENCODE		#####
+#####		ENCODING		#####
 	.text
 	.align	2
 	.globl	byte_encoder
 	.ent	byte_encoder
 
-byte_encoder:						# void byte_encoder (char* valorHexa, unsigned int numInt)
+byte_encoder:    # void byte_encoder (char* valorHexa, unsigned int numInt)
 
 ########## STACK FRAME ##########
 #define BE_FSIZE 16
@@ -16,7 +16,7 @@ byte_encoder:						# void byte_encoder (char* valorHexa, unsigned int numInt)
 #define BE_FRAME_A1 20
 #define BE_FRAME_A0 16
 
-##########	   SRA     ##########
+##########     SRA     ##########
 #define BE_FRAME_FP 12
 #define BE_FRAME_GP 8
 
@@ -24,7 +24,10 @@ byte_encoder:						# void byte_encoder (char* valorHexa, unsigned int numInt)
 #define BE_FRAME_LNIBBLE 4
 #define BE_FRAME_HNIBBLE 0
 
-	.frame	$fp, BE_FSIZE, ra		# (2 SRA + 2 LTA) * 4 bytes; no hay ABA por ser funcion leaf
+##########     ABA     ##########
+# no hay por ser funcion leaf
+
+	.frame	$fp, BE_FSIZE, ra		# (2 SRA + 2 LTA) * 4 bytes
 	subu	sp, sp, BE_FSIZE
 	
 	sw	$fp, BE_FRAME_FP(sp)		# guardo fp en BE_FRAME_FP + sp
@@ -32,12 +35,12 @@ byte_encoder:						# void byte_encoder (char* valorHexa, unsigned int numInt)
 	move	$fp, sp					# llevo fp a la pos del sp
 	
 	# Argumento de funcion
-	sw	a0, BE_FRAME_A0($fp)    	# a0: char* valorHexa
-	sw	a1, BE_FRAME_A1($fp)    	# a1: unsigned int numInt
+	sw	a0, BE_FRAME_A0($fp)		# a0: char* valorHexa
+	sw	a1, BE_FRAME_A1($fp)		# a1: unsigned int numInt
 	
 	andi	t0, a1, 0xf0			# t0 = highNibble de numInt
 	sra	t0, t0, 4					# highNibble >> 4
-	sw	t0, BE_FRAME_HNIBBLE($fp)	# guardo la variable local t0 en el stack frame
+	sw	t0, BE_FRAME_HNIBBLE($fp)	# guardo la variable local en el SFrame
 	
 	andi	t1, a1, 0x0f			# t1 = lowNibble de numInt
 	sw	t1, BE_FRAME_LNIBBLE($fp)	# guardo la variable local t1 en el stack frame
@@ -73,7 +76,7 @@ encode:								# int encode (int infd, int outfd)
 #define ENC_FRAME_A1 52
 #define ENC_FRAME_A0 48
 
-##########	   SRA     ##########
+##########     SRA     ##########
 # se agrega un word de padding
 #define ENC_FRAME_RA 40
 #define ENC_FRAME_FP 36
@@ -105,22 +108,22 @@ encode:								# int encode (int infd, int outfd)
 read_y_loop:
 	addu a1,$fp,ENC_FRAME_CARACTER		# a1 = &caracter
 	li	a2,1							# a2 = 1, para leer un byte
-	li	v0,	SYS_read					# tengo los 3 argumentos del read: a0=infd, a1=&caracter, a2=1
-	syscall								# en v0 tengo la cantidad de bytes que leo o negativo si hubo error
+	li	v0,	SYS_read					# read: a0=infd, a1=&caracter, a2=1
+	syscall								# en v0 = cantidad de bytes que leo o negativo si hubo error
 	bltz	v0, error_read				# salto si hubo un error de lectura
 	
-	bgtz	v0, while_encode			# entro al while si es mayor a 0 (en este caso si es 0, es eof)
+	bgtz	v0, while_encode			# entro al while si es > 0 (si es 0, es eof)
 	b	return_encode					# salta en caso de que sea menor o igual a 0
 	
 while_encode:
 	sw	v0, ENC_FRAME_BYTES($fp)		# salvo v0 por llamada de funcion de byte_encoder
-	addu a0, $fp, ENC_FRAME_STRING		# cargo en a0 la direccion $fp + ENC_FRAME_STRING (comienzo del char*)
+	addu a0, $fp, ENC_FRAME_STRING		# a0 = $fp + ENC_FRAME_STRING (inicio del char*)
 	lw	a1, ENC_FRAME_CARACTER($fp)		# a1 = caracter leido
 	la	t9, byte_encoder				# carga en t9 donde esta byte_encoder
 	jal	t9								# salta a byte_encoder
 
 	lw	a0, ENC_FRAME_A1($fp)			# en a0 tengo outfd
-	addu a1, $fp, ENC_FRAME_STRING		# cargo en a1 la direccion $fp + ENC_FRAME_STRING (comienzo del char*)
+	addu a1, $fp, ENC_FRAME_STRING		# a1 = $fp + ENC_FRAME_STRING (inicio del char*)
 	li	a2, 2							# cargo en a2 el 2, para escribir dos bytes
 	li	v0, SYS_write					# llamo a write
 	syscall
@@ -170,7 +173,7 @@ vecHexa:
 	.byte	69				#'E'
 	.byte	70				#'F'
 	
-############	DECODE 	#########
+#####		DECODING		#####
 	.text
 	.align	2
 	.globl	correrReferencia
@@ -184,7 +187,7 @@ correrReferencia:					# int correrReferencia  (int numInt)
 ########## CALLER ARGS ##########
 #define CR_FRAME_A0 8
 
-##########	   SRA     ##########
+##########     SRA     ##########
 #define CR_FRAME_FP 4
 #define CR_FRAME_GP 0
 
@@ -247,7 +250,7 @@ byte_decoder:						# int byte_decoder (int numPri, int numSeg)
 #define BD_FRAME_A1 44
 #define BD_FRAME_A0 40
 
-##########	   SRA     ##########
+##########     SRA     ##########
 # se agrega un word de padding
 #define BD_FRAME_RA 32
 #define BD_FRAME_FP 28
@@ -315,7 +318,7 @@ decode:
 #define DEC_FRAME_A1 52
 #define DEC_FRAME_A0 48
 
-##########	   SRA     ##########
+##########     SRA     ##########
 # se agrega un word de padding
 #define DEC_FRAME_RA 40
 #define DEC_FRAME_FP 36
@@ -354,7 +357,7 @@ read_y_loop_decode:
 	syscall
 	bltz	v0, error_read_decode		# si v0 < 0 hubo error en lectura
 	
-	bgtz	v0, while_decode			# entro al while si es mayor a 0 (en este caso si es 0, es eof)
+	bgtz	v0, while_decode			# entro al while si es > 0 (si es 0, es eof)
 	b	return_decode
 
 while_decode:
