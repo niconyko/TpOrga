@@ -150,7 +150,8 @@ Maximiliano \textsc{Schultheis} - 93285\\[5cm] % Your name
 \lstinputlisting{../src/b16.S}
 
 \section{Stack Frame}
-
+A continuación se mostrarán los stack frames respectivos a cada función. Los casilleros en verde corresponden a los parámetros que serán pasados por la función caller, por lo que no son parte del stack frame de la función descripta en esa sección.
+En los casos que aparezca un '-', se trata de padding y está solamente para mantener el tamaño de cada área como un múltiplo de '8'.
 \subsection{Stack Frame byte encoder}
 \renewcommand
 {\tabcolsep}{12pt}
@@ -251,6 +252,6 @@ Maximiliano \textsc{Schultheis} - 93285\\[5cm] % Your name
 \end{tabular}
 \end{center}
 \section{Conclusiones}
-
-
+Realizando este trabajo práctico logramos terminar de afianzar los conocimientos adquiridos durante la cursada en lo que respecta a la programación en assembly.
+Ya que al comienzo de este trabajo se poseía la implementación en C del mismo programa, se pudo compilar el mismo a assembly y compararlo con el código propio. Se comprobó de esta forma que los stack frames creados por el compilador reservaban mucho más espacio del necesario. A su vez, se pudo notar que programando directamente en assembly, el usuario tiene mayor flexibilidad para optimizar el software que en lenguajes de mayor nivel, a cuestas de la pérdida total de la independencia de la arquitectura a utilizar. 
 \end{document}
